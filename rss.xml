@@ -24,10 +24,10 @@
 <div id="disqus_thread"></div>
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES: THIS CODE IS ONLY AN EXAMPLE * * */
-    var disqus_shortname = 'jirkamarsik; // Required - Replace example with your forum shortname
-    var disqus_identifier = 'identifier';
+    var disqus_shortname = 'jirkamarsik'; // Required - Replace example with your forum shortname
+    var disqus_identifier = '2014/02/26/my-phd-topic-in-3-minutes';
     var disqus_title = 'My PhD Topic in 3 Minutes';
-    var disqus_url = './2014/02/26/my-phd-topic-in-3-minutes/index.html';
+    var disqus_url = 'http://jirka.marsik.me/2014/02/26/my-phd-topic-in-3-minutes';
 
     /* * * DON'T EDIT BELOW THIS LINE * * */
     (function() {
@@ -123,10 +123,10 @@ incorporated into the generated records.</code></pre>
 <div id="disqus_thread"></div>
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES: THIS CODE IS ONLY AN EXAMPLE * * */
-    var disqus_shortname = 'jirkamarsik; // Required - Replace example with your forum shortname
-    var disqus_identifier = 'identifier';
+    var disqus_shortname = 'jirkamarsik'; // Required - Replace example with your forum shortname
+    var disqus_identifier = '2012/12/19/the-working-hipster-s-clojure';
     var disqus_title = 'The Working Hipster's Clojure';
-    var disqus_url = './2012/12/19/the-working-hipster-s-clojure/index.html';
+    var disqus_url = 'http://jirka.marsik.me/2012/12/19/the-working-hipster-s-clojure';
 
     /* * * DON'T EDIT BELOW THIS LINE * * */
     (function() {
@@ -344,10 +344,10 @@ this is what we used:
 <div id="disqus_thread"></div>
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES: THIS CODE IS ONLY AN EXAMPLE * * */
-    var disqus_shortname = 'jirkamarsik; // Required - Replace example with your forum shortname
-    var disqus_identifier = 'identifier';
+    var disqus_shortname = 'jirkamarsik'; // Required - Replace example with your forum shortname
+    var disqus_identifier = '2012/12/11/type-raising-and-the-cooperative-construction-of-meaning';
     var disqus_title = 'Type Raising and the Cooperative Construction of Meaning';
-    var disqus_url = './2012/12/11/type-raising-and-the-cooperative-construction-of-meaning/index.html';
+    var disqus_url = 'http://jirka.marsik.me/2012/12/11/type-raising-and-the-cooperative-construction-of-meaning';
 
     /* * * DON'T EDIT BELOW THIS LINE * * */
     (function() {
