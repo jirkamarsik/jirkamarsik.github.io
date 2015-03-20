@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>Algebraic Effects and Handlers in Natural Language Interpretation - Jirka Maršík</title>
+        <title>Pragmatic Side Effects - Jirka Maršík</title>
         <link rel="stylesheet" type="text/css" href="../../css/default.css" />
     </head>
     <body>
@@ -20,20 +20,20 @@
         </div>
 
         <div id="content">
-            <h1>Algebraic Effects and Handlers in Natural Language Interpretation</h1>
+            <h1>Pragmatic Side Effects</h1>
 
             <h2 id="files">Files</h2>
 <ul>
-<li><p><a href="LingEff.eff">LingEff.eff</a></p>
-<p>The grammar from the paper (dynamic logic + extraction as an effect) implemented as a library an <a href="http://math.andrej.com/eff/">Eff</a> with a tiny suite of examples.</p></li>
-<li><p><a href="paper.pdf">Preprint</a></p>
-<p>The preprint of the paper, as was submitted to NLCS’14.</p></li>
+<li><p><a href="LingEff+Presup.eff">LingEff+Presup.eff</a></p>
+<p>The state of my proof-of-concept prototype as of my presentation at Redraw 2015. It treats quantification and anaphora (as in de Groote’s type-theoretic dynamic logic), presupposition, as in Lebedeva’s dissertation, () alongside with a treatment of the binding problem.</p>
+<p>Feeding this file through <a href="http://www.eff-lang.org/">Eff</a> produces the logical representations of the small suite of examples. One can also load the library in the Eff toplevel (REPL) and play around with their examples from the grammar.</p>
+<p>NB: The semantic representations are output in s-expression notation which isn’t nice to read. The use of <a href="https://github.com/jirkamarsik/tardis/blob/master/src/tardis/logic.clj">some pretty-printer</a> is recommended.</p></li>
+<li><p><a href="LingEff+Presup-Move.eff">LingEff+Presup-Move.eff</a></p>
+<p>Same as above, but this theory is simplified by not ostentatiously treating extraction as an effect and using the traditional treatment instead.</p></li>
+<li><p><a href="abstract.pdf">Abstract</a></p>
+<p>The abstract of my talk, as submitted to Redraw 2015.</p></li>
 <li><p><a href="slides.pdf">Slides</a></p>
-<p>Slides for my presentation given at NLCS’14.</p></li>
-<li><p><a href="poster.pdf">Poster</a></p>
-<p>Poster for the LCT 2014 meeting.</p></li>
-<li><p><a href="writeup.pdf">Write-up</a> (unfinished)</p>
-<p>A prequel to the paper that motivates an effects-first view of de Groote’s continuation-based dynamic logic. This includes a refactoring of continuation-based dynamic logic in terms of monads which can be seen as a first step towards the transition to effects and handlers.</p></li>
+<p>Slides for my presentation given at Redraw 2015.</p></li>
 </ul>
         </div>
         <div id="footer">
