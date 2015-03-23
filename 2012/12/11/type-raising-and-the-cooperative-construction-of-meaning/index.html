@@ -4,18 +4,18 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <title>Type Raising and the Cooperative Construction of Meaning - Jirka Maršík</title>
-        <link rel="stylesheet" type="text/css" href="../../../../../css/default.css" />
+        <link rel="stylesheet" type="text/css" href="../../../../css/default.css" />
     </head>
     <body>
         <div id="header">
             <div id="logo">
-                <a href="../../../../../">The Personal Blog of Jirka Maršík</a>
+                <a href="../../../../">The Personal Blog of Jirka Maršík</a>
             </div>
             <div id="navigation">
-                <a href="../../../../../">Home</a>
-                <a href="../../../../../research">Research</a>
-                <a href="../../../../../about">About</a>
-                <a href="../../../../../archive">Archive</a>
+                <a href="../../../../">Home</a>
+                <a href="../../../../research">Research</a>
+                <a href="../../../../about">About</a>
+                <a href="../../../../archive">Archive</a>
             </div>
         </div>
 
@@ -132,39 +132,35 @@
 <p>Well, it’s not really like type raising if you look at it closely.</p>
 <p>
 <table>
-<tr><td>
+<tr>
+<td>
 this is the original:
 </td>
-    <td>
-<span style="color:red">λx. λy. <strong>like(</strong>y<strong>, </strong>x<strong>)</strong></span>
-</td>
-    <td> 
-: t → t → f
-</td>
+<pre><code>&lt;td&gt;&lt;span style=&quot;color:red&quot;&gt;λx. λy.
+    &lt;strong&gt;like(&lt;/strong&gt;y&lt;strong&gt;,
+    &lt;/strong&gt;x&lt;strong&gt;)&lt;/strong&gt;&lt;/span&gt;&lt;/td&gt;
+&lt;td&gt; : t → t → f&lt;/td&gt;</code></pre>
 </tr>
-<tr><td>
+<tr>
+<td>
 this would be the type raised version:
 </td>
-    <td>
-<span style="color:red">λO. O@(λx. λy. <strong>like(</strong>y<strong>, </strong>x<strong>)</strong>)</span>
-</td>
-    <td> 
-: ((t → t → f) → (t → f)) → (t → f)
-</td>
+<pre><code>&lt;td&gt;&lt;span style=&quot;color:red&quot;&gt;λO. O@(λx. λy.
+    &lt;strong&gt;like(&lt;/strong&gt;y&lt;strong&gt;,
+    &lt;/strong&gt;x&lt;strong&gt;)&lt;/strong&gt;)&lt;/span&gt;&lt;/td&gt;
+&lt;td&gt; : ((t → t → f) → (t → f)) → (t → f)&lt;/td&gt;</code></pre>
 </tr>
-<tr><td>
+<tr>
+<td>
 this is what we used:
 </td>
-    <td>
-<span style="color:red">λO. λy. O@(λx. <strong>like(</strong>y<strong>, </strong>x<strong>)</strong>)</span>
-</td>
-    <td> 
-: ((t → f) → f) → t → f
-</td>
-</tr>    
+<pre><code>&lt;td&gt;&lt;span style=&quot;color:red&quot;&gt;λO. λy. O@(λx.
+    &lt;strong&gt;like(&lt;/strong&gt;y&lt;strong&gt;,
+    &lt;/strong&gt;x&lt;strong&gt;)&lt;/strong&gt;)&lt;/span&gt;&lt;/td&gt;
+&lt;td&gt; : ((t → f) → f) → t → f&lt;/td&gt;</code></pre>
+</tr>
 </table>
 </p>
-
 <p>Now we can see that the position of λy is what is different in the two versions. So what does our version actually do? It’s not that hard to decipher. After a transitive verb is applied to an object, it is supposed to return a predicate, that is a function which takes a term and returns a formula stating something about the term.</p>
 <p>Some examples of predicates we have seen:</p>
 <ul>
