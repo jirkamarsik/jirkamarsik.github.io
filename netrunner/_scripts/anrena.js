@@ -9,9 +9,9 @@ function DataAccess() {
     };
 }
 
-var myCardCollection = {}; // Instance of CardCollection contains all card information and generates draft picks from the available cards
-var myArenaScript = {}; // Instance of Script contains and handles the draft pick logic
-var myDeckList = {}; // Instance of deckList contains and handles all picked card information
+var myCardCollection = null; // Instance of CardCollection contains all card information and generates draft picks from the available cards
+var myArenaScript = null; // Instance of Script contains and handles the draft pick logic
+var myDeckList = null; // Instance of deckList contains and handles all picked card information
 var dataAccess = new DataAccess();
 var preferences = { //Global settings
     "deckSize": 30, // to be used with drafting ID
@@ -29,6 +29,9 @@ var preferences = { //Global settings
 };
 var releasedSets = []; // list of currently released data packs (automatically populated from NetrunnerDB)
 var imageURLTemplate = "";
+
+// This is a list of cards that should be removed from the card pool after it is initialized.
+const cardsToBeRemoved = [];
 
 function CardCollection(data, setFilter) {
     /*
@@ -168,6 +171,15 @@ function CardCollection(data, setFilter) {
             myArenaScript.blockCard(cardCode);
         }
     };
+    this.removeCopyFromSomewhereInCollection = function (cardCode) {
+        const cardPoolCodes = [ "runner", "corp", "runner-id", "corp-id", "agendas", "draft-id" ];
+        for (const cardPoolCode of cardPoolCodes) {
+            const card = this.getCard(cardPoolCode, cardCode);
+            if (card !== null) {
+                this.removeCopyFromCollection(cardPoolCode, cardCode);
+            }
+        }
+    };
     this.blockJintekiCards = function () {
         $.each(cardSets.corp.concat(cardSets.agendas), function (key, value) {
             if (value.faction_code === "jinteki") {
@@ -213,7 +225,7 @@ var views = {
         currentPicks = picks;
         var selected = [];
         $.each(picks, function (key, value) {
-            selected.push("<a href=\"javascript:views.picked('" + value.code + "','" + cardPoolCode + "')\"><img class='pickImg' src='" + imageURLTemplate.replace("{code}", value.code) + "' alt='" + value.title + "'></a>");
+            selected.push("<a href=\"javascript:views.picked('" + value.code + "','" + cardPoolCode + "')\"><img class='pickImg' src='" + cardImageURL(value) + "' alt='" + value.title + "'></a>");
         });
         $("#Arena").html(selected.join(""));
     },
@@ -255,7 +267,7 @@ var views = {
         $(".card").mouseenter(function (event) {
             event.stopPropagation();
             var position = $(this).offset();
-            $("#cardPopup").css("background-image", "url(" + imageURLTemplate.replace("{code}", $(this).data('cardcode')) + " )");
+            $("#cardPopup").css("background-image", "url(" + $(this).data('card_image_url') + " )");
             $("#cardPopup").css("top", (position.top));
             $("#cardPopup").css("left", position.left + $(this).width());
             $("#cardPopup").show();
@@ -348,7 +360,7 @@ function deckList(targetDiv) {
         $("#DeckList").html("");
         deckListHeaderHtml = "<div  class=\"card identity ";
         if (typeof this.idCard() !== "undefined") {
-            deckListHeaderHtml += this.idCard().faction_code + "\" data-cardcode=\"" + this.idCard().code + "\" > " + this.idCard().title + " (" + deckSize + "/" + myArenaScript.deckSize() + ")";
+            deckListHeaderHtml += this.idCard().faction_code + "\" data-cardcode=\"" + this.idCard().code + "\" data-card_image_url=\"" + cardImageURL(this.idCard()) + "\" > " + this.idCard().title + " (" + deckSize + "/" + myArenaScript.deckSize() + ")";
         } else {
             deckListHeaderHtml += "\" >Deck";
         }
@@ -376,7 +388,7 @@ function deckList(targetDiv) {
                  * as well as the key count that contains the amount of times a card has been picked
                  * and the key usedInfluence that marks how much influence the copies of this card take from the deck.
                  */
-                deckListTypeHtml += "<div class=\"card\" data-cardcode=\"" + cardForPrint.code + "\">";
+                deckListTypeHtml += "<div class=\"card\" data-cardcode=\"" + cardForPrint.code + "\" data-card_image_url=\"" + cardImageURL(cardForPrint) + "\" >";
 
                 deckListTypeHtml += "<span class=\"card-count\" >" + cardForPrint["count"] + "</span>  <span class=\"card-title " + cardForPrint["faction_code"] + "\" >" + cardForPrint["title"] + "</span> ";
                 if (typeof cardForPrint["usedInfluence"] !== "undefined") {
@@ -483,9 +495,9 @@ function Script(sideCode, formatCode) {
         } else {
             blockedCodes = [];
             if (sideCode === "runner") {
-                views.publishChoice(myCardCollection.createSet("runner-id", [], preferences.pickOptions, "", [], "", -1), "runner-id");
+                views.publishChoice(myCardCollection.createSet("runner-id", [], preferences.pickOptions, "", blockedCodes, "", -1), "runner-id");
             } else {
-                views.publishChoice(myCardCollection.createSet("corp-id", [], preferences.pickOptions, "", [], "", -1), "corp-id");
+                views.publishChoice(myCardCollection.createSet("corp-id", [], preferences.pickOptions, "", blockedCodes, "", -1), "corp-id");
             }
 
         }
@@ -808,8 +820,101 @@ var onDataAvaliable = function (data) {
     myCardCollection = new CardCollection(data.data, preferences.setFilter);
     imageURLTemplate = data.imageUrlTemplate;
     myArenaScript.start();
+    removeCards();
 };
 $(document).ready(function () {
     views.deckAreaContent('home');
     views.selectType();
+    printHelpOnBlocking();
 });
+
+
+
+// Mostly custom stuff below
+
+function blockDeckOrDecklist(url) {
+    const decklistRE = new RegExp("netrunnerdb.com/[a-z]{2}/decklist/([0-9]+)");
+    const deckRE = new RegExp("netrunnerdb.com/[a-z]{2}/deck/(?:view|edit)/([0-9]+)");
+    let match;
+
+    match = decklistRE.exec(url);
+    if (match) {
+        return blockDecklist(match[1]);
+    }
+
+    match = deckRE.exec(url);
+    if (match) {
+        return blockDeck(match[1]);
+    }
+}
+
+async function fetchDecklist(id) {
+    const response = await $.getJSON(`https://netrunnerdb.com/api/2.0/public/decklist/${id}`);
+    return response.data[0];
+}
+
+async function fetchDeck(id) {
+    const response = await $.getJSON(`https://netrunnerdb.com/api/2.0/public/deck/${id}`);
+    return response.data[0];
+}
+
+async function blockDecklist(id) {
+    if (!/^[0-9]+$/.test(id)) {
+        return blockDeckOrDecklist(id);
+    }
+    const decklist = await fetchDecklist(id);
+    console.log(`Blocking ${Object.values(decklist.cards).reduce((a, b) => a + b)} cards from decklist ${decklist.name}`);
+    blockCards(decklist.cards);
+}
+
+async function blockDeck(id) {
+    if (!/^[0-9]+$/.test(id)) {
+        return blockDeckOrDecklist(id);
+    }
+    const deck = await fetchDeck(id);
+    console.log(`Blocking ${Object.values(deck.cards).reduce((a, b) => a + b)} cards from deck ${deck.name}`);
+    blockCards(deck.cards);
+}
+
+function blockCards(cards) {
+    for (const cardCode in cards) {
+        for (let i = 0; i < cards[cardCode]; i++) {
+            if (myCardCollection !== null) {
+                myCardCollection.removeCopyFromSomewhereInCollection(cardCode);
+            } else {
+                cardsToBeRemoved.push(cardCode);
+            }
+        }
+    }
+}
+
+function removeCards() {
+    for (const cardCode of cardsToBeRemoved) {
+        myCardCollection.removeCopyFromSomewhereInCollection(cardCode);
+    }
+}
+
+function printHelpOnBlocking() {
+    console.log(`Hi!
+You can now remove the cards contained within a deck or a decklist by calling
+blockDeck(id) or blockDecklist(id) respectively, where id is the numerical ID
+you can see in URLs pointing to the deck. You can also call either of the functions
+with the URL of a deck or decklist directly.
+
+For example:
+    blockDecklist("https://netrunnerdb.com/en/decklist/3106/starter-deck-corp-beginner-weyland-") works the same as blockDeckList(3106)
+and blockDeck("https://netrunnerdb.com/en/deck/view/1041890") is the same as blockDeck(1041890).
+
+Actually, you can call either function with either kind of URL, so don't worry
+too much about which one you use.
+
+Cheers!`);
+}
+
+function cardImageURL(card) {
+    if (card.image_url !== undefined) {
+        return card.image_url;
+    } else {
+        return imageURLTemplate.replace("{code}", card.code);
+    }
+}
